@@ -1,52 +1,54 @@
 package com.example.contact
 
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.app.Application
 import android.content.Context
 import android.view.View
 import android.widget.Toast
 import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.room.Database
+import com.example.contact.database.Contact
+import com.example.contact.database.ContactDao
 import com.example.contact.database.ContactDatabase
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.*
+
 @SuppressLint("StaticFieldLeak")
-class ContactViewModel(var context: Application) : AndroidViewModel(context) {
-    private  val mainActivity:MainActivity=MainActivity()
-    private lateinit var recyclerView: RecyclerView
-    private lateinit var adapter: ContactAdapter
-    fun setRecyclerView(view: View){
-        recyclerView = view.findViewById(R.id.recyclerView)
-        recyclerView.setHasFixedSize(true)
-        recyclerView.layoutManager = LinearLayoutManager(mainActivity)
-        val llm = LinearLayoutManager(mainActivity)
-        llm.orientation = LinearLayoutManager.VERTICAL
+class ContactViewModel(application: Application) : AndroidViewModel(application) {
 
-        setData()
-    }
+//    private val viewModelJob = Job()
+    private val uiScope: CoroutineScope = CoroutineScope(Dispatchers.IO)
+ //   private var _contactList = MutableLiveData<List<Contact>>()
+ //   val contactList:LiveData<List<Contact>>
+//    get()=_contactList
+    var job:Job? = null
+    val database:ContactDatabase=ContactDatabase.getInstance(application)
+    val contactDao:ContactDao=database.contactDao()
 
-    @SuppressLint("NotifyDataSetChanged")
-    private fun setData() {
-        val database = ContactDatabase.getInstance(context)
-        val noteDao = database!!.contactDao()
-
-//        database operation should not be in main thread. so use corooutine
+    fun getData(): LiveData<List<Contact>> {
+//        database operation should not be in main thread. so use coroutine
 //        val list=noteDao?.getAllNotes()
-        CoroutineScope(Dispatchers.IO).launch {
-            val list = noteDao.getAllContacts()
-            withContext(Dispatchers.Main) {
-                Toast.makeText(mainActivity,"inside withContext adapter creation", Toast.LENGTH_SHORT).show()
-                adapter = ContactAdapter(list)
-                recyclerView.adapter=adapter
-                adapter.notifyDataSetChanged()
+//        var contacts: LivedataList<Contact>? = null
+        return contactDao.getAllContacts()
 
-
-            }
-        }
+//            setContactValue(contactDao.getAllContacts())
 
     }
 
+    override fun onCleared() {
+        super.onCleared()
+        job?.cancel()
+    }
+
+    private fun setContactValue(contactList: List<Contact>): Job {
+        return CoroutineScope(Dispatchers.Main).launch {
+            "ass"
+           // _contactList.value = contactList
+        }
+    }
 }
