@@ -1,7 +1,0 @@
-<resources>
-    <string name="app_name">Verification</string>
-    <string name="account_verification_required">Account Verification Required</string>
-    <string name="verification_text">Verification mail has been sent to\n austin_wade@gmail.com. Please verify your email address to continue using Zoho Assist. For more details , read our</string>
-    <string name="support_documentation">support documentation.</string>
-    <string name="verify_your_email">VERIFY YOUR EMAIL</string>
-</resources>
